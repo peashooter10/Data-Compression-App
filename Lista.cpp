@@ -1,6 +1,7 @@
 #include "Lista.h"
 #include <iostream>
 using namespace std;
+//incerc ceva
 
 Nod (Nod &nod) {
     //supradefinesc operatorul + pentru a fuziona 2 arbori
