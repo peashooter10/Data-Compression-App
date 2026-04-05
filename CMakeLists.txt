@@ -6,5 +6,4 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(Huffman main.cpp
         Arbore.cpp
         Arbore.h
-        config.h
 )
