@@ -1,6 +1,18 @@
-# Ignore build and IDE files
-cmake-build-debug/
-*.exe
-*.obj
-*.o
+# CLion
 .idea/
+
+# CMake
+cmake-build-debug/
+cmake-build-release/
+
+# executabile
+*.exe
+*.out
+
+# obiecte
+*.o
+*.obj
+
+# fisiere temporare
+*.log
+*.cache
