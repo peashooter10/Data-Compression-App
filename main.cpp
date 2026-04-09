@@ -1,19 +1,24 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
-#include <iomanip>
-#include "Arbore.h"
+#include <string>
+#include <filesystem>
+#include "Lista.h"
 
 using namespace std;
 
 const int DIMENSIUNE = 256;
 
-int main() {
-    int i,sumaFrecvente=0,dimensiuneFisier=0;
-    string fisier = "exemplu.txt";
-    ifstream file(fisier, ios::binary);
+string createNumeFisierComprimat(string fisier) {
+    return fisier + ".huff";
+}
 
+int main() {
+    string fisier = "wordpad.exe";
+    string numeFisierComprimat;
+    numeFisierComprimat= createNumeFisierComprimat(fisier);
+
+    ifstream file(fisier, ios::binary);
     if (!file.is_open()) {
         cerr << "Eroare la deschiderea fisierului!\n";
         return 1;
@@ -26,6 +31,8 @@ int main() {
     );
     file.close();
 
+    cout << "Fisier citit: " << buffer.size() << " bytes\n";
+
     // --- calcul frecvente ---
     int frecventa[DIMENSIUNE] = {0};
 
@@ -33,69 +40,92 @@ int main() {
         frecventa[c]++;
     }
 
-    dimensiuneFisier=buffer.size();
+    // --- initializare lista ---
+    Lista lista;
+    lista.initializareLista(frecventa, DIMENSIUNE);
 
-    //contorizez
-    for (i=0; i<buffer.size(); ++i) {
-        frecventa[buffer[i]]++;
-    }
-
-    //
-    for (i = 0; i < 4096; ++i) {
-        if (frecventa[i] > 0) {
-            cout << "0x" << hex << setw(2) << setfill('0') << i
-                 << " : " << dec << frecventa[i] << "\n";
-            sumaFrecvente=sumaFrecvente+frecventa[i];
-        }
-    }
-
-    if (sumaFrecvente==buffer.size())
-        cout<<"e bine, sunt "<< sumaFrecvente << " de bytes\n";
-
-
-    // --- creare arbori initiali ---
-    vector<Arbore> arbori;
-
-    for (int i = 0; i < DIMENSIUNE; i++) {
-        if (frecventa[i] > 0) {
-            Arbore a;
-            a.initFrunza(i, frecventa[i]);
-            arbori.push_back(a);
-        }
-    }
-
-    // --- construire arbore Huffman ---
     int nodUrmator = 256;
 
-    while (arbori.size() > 1) {
-        sort(arbori.begin(), arbori.end(),
-            [](const Arbore &a, const Arbore &b) {
-                return a.getValoare() < b.getValoare();
-            });
+    // --- construire arbore Huffman ---
+    while (lista.dimensiuneListaNoduri > 1) {
+        lista.sortareLista();
+        lista.fuzionareNoduri(0, 1, nodUrmator++);
+    }
+    cout << "Am ajuns dupa arbore\n";
 
-        Arbore nou = Arbore::fuzionareArbori(
-            arbori[0], arbori[1], nodUrmator++
-        );
+    Nod* radacina = &lista.listaNoduri[0];
 
-        arbori.erase(arbori.begin());
-        arbori.erase(arbori.begin());
+    // --- generare coduri ---
+    string coduri[256];
+    lista.genereazaCoduri(radacina, "", coduri);
 
-        arbori.push_back(nou);
+    // --- debug coduri ---
+    cout << "\nCoduri Huffman:\n";
+    for (int i = 0; i < 256; i++) {
+        if (!coduri[i].empty()) {
+            cout << char(i)<< "(" << i << ")" " -> " << coduri[i] << "\n";
+        }
     }
 
-    if (arbori.empty()) {
-        cout << "Fisier gol.\n";
-        return 0;
+    // --- compresie pe biti ---
+    vector<unsigned char> output;
+    unsigned char byte = 0;
+    int bitCount = 0;
+
+    for (unsigned char c : buffer) {
+        string cod = coduri[c];
+
+        for (char bit : cod) {
+            byte <<= 1;
+
+            if (bit == '1')
+                byte |= 1;
+
+            bitCount++;
+
+            if (bitCount == 8) {
+                output.push_back(byte);
+                byte = 0;
+                bitCount = 0;
+            }
+        }
     }
 
-    Arbore arboreFinal;
-    arboreFinal=arbori[0];
+    int bitiRamasi = bitCount;
 
-    // ===============================
-    // 🌳 AFISARE ARBORE
-    // ===============================
-    cout << "\n=== Arbore (X si U) ===\n";
-    arboreFinal.afisareArbore();
+    if (bitCount > 0) {
+        byte <<= (8 - bitCount);
+        output.push_back(byte);
+    }
+
+    cout << "Dimensiune output: " << output.size() << " bytes\n";
+
+    // --- path sigur ---
+    string path = filesystem::current_path().string() + "/" + numeFisierComprimat;
+    cout << "Se salveaza in: " << path << endl;
+
+    // --- scriere fisier ---
+    ofstream out(path, ios::binary);
+
+    if (!out.is_open()) {
+        cerr << "EROARE: Nu pot crea fisierul!\n";
+        return 1;
+    }
+
+    // frecvente
+    out.write((char*)frecventa, sizeof(frecventa));
+
+    // biti ramasi
+    out.write((char*)&bitiRamasi, sizeof(bitiRamasi));
+
+    // date comprimate
+    if (!output.empty()) {
+        out.write((char*)output.data(), output.size());
+    }
+
+    out.close();
+
+    cout << "\nCompresie finalizata!\n";
 
     return 0;
 }

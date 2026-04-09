@@ -4,6 +4,7 @@ project(Huffman)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Huffman main.cpp
-        Arbore.cpp
-        Arbore.h
+        Lista.cpp
+        Lista.h
+        Lista.h
 )
