@@ -1,24 +1,28 @@
 # Roadmap
-## Purpose and functionality
-The application has the main role of compressing files in a _lossless_ format, the resulting file being smaller in size, but the quality remains the same after the procces of decompression. It is a Windows Desktop Application that implements the Huffman algorithm .
-To exemplify the _lossless_ compression, the string "AAABCDDD" can be compressed, transforming into "3ABC3D". Therefore, the compressed file can be reverted into the original file.
-In contrast, a song that is compressed may lose some unique and harder to spot musical notes of the singer or the instrument. However, reverting the file to its original state is impossibile as those characteristics are lost forever.
+## Scop și funcționalitate
+Aplicația are rolul principal de a comprima fișiere într-un format _fără pierderi_ (lossless), fișierul rezultat fiind mai mic ca dimensiune, însă calitatea rămâne aceeași după procesul de decompresie. Este o aplicație Desktop pentru Windows care implementează algoritmul Huffman.
 
-## Development
-The Huffman algortithm was developed in c++ 20 using *CLion*, creating 2 .exe files, the compressor and the decompressor. These .exe files are part of a Java app created in *Apache NetBeans*. The .jar file generated was transformed into an .exe for the Windows users with the help of the *Launch4j* app. Using *GitHub Desktop*, the project was completed and uploaded on *GitHub* and, using *GitHub Actions*, the project is compiled to run on Windows/Linux/Mac.
+Pentru a exemplifica compresia _fără pierderi_, șirul „AAABCDDD” poate fi comprimat, transformându-se în „3ABC3D”. Astfel, fișierul comprimat poate fi reconvertit în fișierul original.
 
-## The market
-In today's market, there are a range of apps that specialise in the compression of data, the most known being WinRAR or 7Zip, both with similar interfaces and functionalities.
+În schimb, o melodie comprimată poate pierde unele note muzicale unice și mai greu de observat ale interpretului sau ale instrumentului. Totuși, revenirea fișierului la starea sa originală este imposibilă, deoarece acele caracteristici sunt pierdute definitiv.
 
-## Planning
-Week 1: Roadmap, analysis of the problem, selecting the environment to develop the app, console implementation of the Huffman algorithm, both compression and decompression\
-Week 2: Creating the basic console application with buttons and user-friendly GUI, implementation of a simple code in order to test the functionality of the console application\
-Week 3: Developing the script to choose a file from the Windows File Explorer and print a preview in the console to check if it is working\
-Week 4: Merging the Apache NetBeans app with the Huffman c++ compression and decompression algorithms\
-Week 5: Testing the app for a range of files
-Week 6 and on: Development and testing future ideas
+## Dezvoltare
+Aplicația de comprimare a datelor folosind algoritmul Huffman a fost dezvoltat în C++ 20 folosind _CLion_, generând 2 fișiere .exe: compresorul și decompresorul. Aceste fișiere .exe fac parte dintr-o aplicație Java creată în _Apache NetBeans_. Fișierul .jar generat a fost transformat într-un .exe pentru utilizatorii Windows cu ajutorul aplicației _Launch4j_. Folosind _GitHub Desktop_, proiectul a fost finalizat și încărcat pe _GitHub_, iar cu ajutorul _GitHub Actions_, proiectul este compilat pentru a rula pe Windows/Linux/Mac.
 
-## Links:  
+## Piața
+Pe piața actuală există o gamă largă de aplicații specializate în comprimarea datelor, cele mai cunoscute fiind WinRAR sau 7-Zip, ambele având interfețe și funcționalități similare.
+
+## Planificare
+Săptămâna 1: Roadmap, analiza problemei, alegerea mediului de dezvoltare, implementarea în consolă a algoritmului Huffman, atât pentru compresie, cât și pentru decompresie\
+Săptămâna 2: Crearea aplicației de bază cu interfață grafică prietenoasă și butoane, implementarea unui cod simplu pentru testarea funcționalității aplicației\
+Săptămâna 3: Dezvoltarea scriptului pentru selectarea unui fișier și afișarea unui preview în consolă pentru verificare\
+Săptămâna 4: Integrarea aplicației din Apache NetBeans cu algoritmii Huffman de compresie și decompresie scriși în C++\
+Săptămâna 5: Testarea aplicației pe o gamă variată de fișiere\
+Săptămâna 6: Dezvoltarea aplicației pentru Windows/Linux/Mac\
+Săptămâna 7: Testare\
+Săptămâna 8: Alte idei\
+
+## Link-uri:  
 CLion: https: //www.jetbrains.com/clion/download/?section=windows\
 Apache NetBeans: https://netbeans.apache.org/front/main/download/\  
 Launch4j: https://sourceforge.net/projects/launch4j/\  

@@ -1,70 +1,141 @@
-name: Build Complete App Package
+name: Aplicație completă Huffman
 
 on:
   push:
     branches: [ main ]
 
 jobs:
+  # pași pentru a construi proiectul pe windows
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'oracle'
+
+      - name: Build JAR
+        run: |
+          cd Java_Source
+          javac -d ../build MeniuPrincipal.java
+          jar cfm ../Java_App/Huffman_Compiler.jar ../Java_App/manifest.mf -C ../build .
+
+      - name: Build Windows Installer
+        run: |
+          jpackage --input Java_App `
+            --name HuffmanCompiler `
+            --main-jar Huffman_Compiler.jar `
+            --type exe `
+            --win-dir-chooser `
+            --win-shortcut `
+            --app-version 1.0.0
+
+      - name: Upload Windows Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows_Installer
+          path: HuffmanCompiler-1.0.0.exe
+
   build-linux:
+    # pași pentru a construi proiectul pe linux
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Compresor (Linux)
-        run: |
-          cd Compresor_Huffman
-          cmake .
-          make
-          mv Compresor_Huffman ../CompresorHuffman_linux
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'oracle'
 
-      - name: Build Decompresor (Linux)
+      - name: Build C++ Linux
         run: |
-          cd Decompresor_Huffman
-          cmake .
-          make
-          mv Decompresor_Huffman ../DecompresorHuffman_linux
+          cd Compresor_Huffman && cmake . && make
+          mv Compresor_Huffman ../Java_App/executabile/CompresorHuffman_linux
+          cd ../Decompresor_Huffman && cmake . && make
+          mv Decompresor_Huffman ../Java_App/executabile/DecompresorHuffman_linux
 
-      - name: Pregatesc pachetul Linux
+      - name: Build Linux Installer
         run: |
-          mkdir -p Java_App_Linux/executabile
-          cp Java_App/Huffman_Compiler.jar Java_App_Linux/
-          cp CompresorHuffman_linux Java_App_Linux/executabile/CompresorHuffman_linux
-          cp DecompresorHuffman_linux Java_App_Linux/executabile/DecompresorHuffman_linux
+          jpackage --input Java_App \
+            --name HuffmanCompiler \
+            --main-jar Huffman_Compiler.jar \
+            --type deb \
+            --app-version 1.0.0
 
-      - name: Upload Linux package
+      - name: Upload Linux Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Java_App_Linux
-          path: Java_App_Linux/
+          name: Linux_Installer
+          path: huffmancompiler_1.0.0_amd64.deb
 
+  build-linux-rpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'oracle'
+
+      - name: Install RPM tools
+        run: sudo apt-get install -y rpm
+
+      - name: Build C++ Linux
+        run: |
+          cd Compresor_Huffman && cmake . && make
+          mv Compresor_Huffman ../Java_App/executabile/CompresorHuffman_linux
+          cd ../Decompresor_Huffman && cmake . && make
+          mv Decompresor_Huffman ../Java_App/executabile/DecompresorHuffman_linux
+
+      - name: Build Linux RPM Installer
+        run: |
+          jpackage --input Java_App \
+            --name HuffmanCompiler \
+            --main-jar Huffman_Compiler.jar \
+            --type rpm \
+            --app-version 1.0.0
+
+      - name: Upload Linux RPM Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux_Installer_RPM
+          path: huffmancompiler-1.0.0-1.x86_64.rpm
+  
   build-mac:
+    # pași pentru a construi proiectul pe mac
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Compresor (Mac)
-        run: |
-          cd Compresor_Huffman
-          cmake .
-          make
-          mv Compresor_Huffman ../CompresorHuffman_mac
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'oracle'
 
-      - name: Build Decompresor (Mac)
+      - name: Build C++ Mac
         run: |
-          cd Decompresor_Huffman
-          cmake .
-          make
-          mv Decompresor_Huffman ../DecompresorHuffman_mac
+          cd Compresor_Huffman && cmake . && make
+          mv Compresor_Huffman ../Java_App/executabile/CompresorHuffman_mac
+          cd ../Decompresor_Huffman && cmake . && make
+          mv Decompresor_Huffman ../Java_App/executabile/DecompresorHuffman_mac
 
-      - name: Pregatesc pachetul Mac
+      - name: Build Mac Installer
         run: |
-          mkdir -p Java_App_Mac/executabile
-          cp Java_App/Huffman_Compiler.jar Java_App_Mac/
-          cp CompresorHuffman_mac Java_App_Mac/executabile/CompresorHuffman_mac
-          cp DecompresorHuffman_mac Java_App_Mac/executabile/DecompresorHuffman_mac
+          jpackage --input Java_App \
+            --name HuffmanCompiler \
+            --main-jar Huffman_Compiler.jar \
+            --type dmg \
+            --app-version 1.0.0
 
-      - name: Upload Mac package
+      - name: Upload Mac Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Java_App_Mac
-          path: Java_App_Mac/
+          name: Mac_Installer
+          path: HuffmanCompiler-1.0.0.dmg
