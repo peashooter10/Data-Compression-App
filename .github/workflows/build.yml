@@ -1,11 +1,10 @@
-name: Aplicație completă Huffman
+name: Build Complete App Package
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  # pași pentru a construi proiectul pe windows
   build-windows:
     runs-on: windows-latest
     steps:
@@ -17,15 +16,9 @@ jobs:
           java-version: '25'
           distribution: 'oracle'
 
-      - name: Build JAR
-        run: |
-          cd Java_Source
-          javac -d ../build MeniuPrincipal.java
-          jar cfm ../Java_App/Huffman_Compiler.jar ../Java_App/manifest.mf -C ../build .
-
       - name: Build Windows Installer
         run: |
-          jpackage --input Java_App `
+          jpackage --input "Aplicație_Java" `
             --name HuffmanCompiler `
             --main-jar Huffman_Compiler.jar `
             --type exe `
@@ -40,7 +33,6 @@ jobs:
           path: HuffmanCompiler-1.0.0.exe
 
   build-linux:
-    # pași pentru a construi proiectul pe linux
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,23 +45,23 @@ jobs:
 
       - name: Build C++ Linux
         run: |
-          cd Compresor_Huffman && cmake . && make
-          mv Compresor_Huffman ../Java_App/executabile/CompresorHuffman_linux
-          cd ../Decompresor_Huffman && cmake . && make
-          mv Decompresor_Huffman ../Java_App/executabile/DecompresorHuffman_linux
+          cd Compresor && cmake . && make
+          mv Compresor ../Aplicație_Java/executabile/CompresorHuffman_linux
+          cd ../Decompresor && cmake . && make
+          mv Decompresor ../Aplicație_Java/executabile/DecompresorHuffman_linux
 
-      - name: Build Linux Installer
+      - name: Build Linux DEB Installer
         run: |
-          jpackage --input Java_App \
+          jpackage --input "Aplicație_Java" \
             --name HuffmanCompiler \
             --main-jar Huffman_Compiler.jar \
             --type deb \
             --app-version 1.0.0
 
-      - name: Upload Linux Installer
+      - name: Upload Linux DEB Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Linux_Installer
+          name: Linux_Installer_DEB
           path: huffmancompiler_1.0.0_amd64.deb
 
   build-linux-rpm:
@@ -88,14 +80,14 @@ jobs:
 
       - name: Build C++ Linux
         run: |
-          cd Compresor_Huffman && cmake . && make
-          mv Compresor_Huffman ../Java_App/executabile/CompresorHuffman_linux
-          cd ../Decompresor_Huffman && cmake . && make
-          mv Decompresor_Huffman ../Java_App/executabile/DecompresorHuffman_linux
+          cd Compresor && cmake . && make
+          mv Compresor ../Aplicație_Java/executabile/CompresorHuffman_linux
+          cd ../Decompresor && cmake . && make
+          mv Decompresor ../Aplicație_Java/executabile/DecompresorHuffman_linux
 
       - name: Build Linux RPM Installer
         run: |
-          jpackage --input Java_App \
+          jpackage --input "Aplicație_Java" \
             --name HuffmanCompiler \
             --main-jar Huffman_Compiler.jar \
             --type rpm \
@@ -106,9 +98,8 @@ jobs:
         with:
           name: Linux_Installer_RPM
           path: huffmancompiler-1.0.0-1.x86_64.rpm
-  
+
   build-mac:
-    # pași pentru a construi proiectul pe mac
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -121,14 +112,14 @@ jobs:
 
       - name: Build C++ Mac
         run: |
-          cd Compresor_Huffman && cmake . && make
-          mv Compresor_Huffman ../Java_App/executabile/CompresorHuffman_mac
-          cd ../Decompresor_Huffman && cmake . && make
-          mv Decompresor_Huffman ../Java_App/executabile/DecompresorHuffman_mac
+          cd Compresor && cmake . && make
+          mv Compresor ../Aplicație_Java/executabile/CompresorHuffman_mac
+          cd ../Decompresor && cmake . && make
+          mv Decompresor ../Aplicație_Java/executabile/DecompresorHuffman_mac
 
       - name: Build Mac Installer
         run: |
-          jpackage --input Java_App \
+          jpackage --input "Aplicație_Java" \
             --name HuffmanCompiler \
             --main-jar Huffman_Compiler.jar \
             --type dmg \
