@@ -28,8 +28,8 @@ private:
 public:
     Nod* listaNoduri[512]; // lista de pointeri de tip nod are maxim 511 de noduri
     int dimensiuneListaNoduri; // dimensiunea listei de noduri
-    Lista(); // constructor
-    ~Lista(); // destructor
+    Lista();
+    ~Lista();
 
     void initializareLista(int frecvente[], int dimensiuneFrecventa);
     void fuzionareNoduri(int poz1, int poz2, int nodUrmator); // fuzionarea nodurilor
