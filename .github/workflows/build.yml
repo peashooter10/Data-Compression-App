@@ -1,0 +1,60 @@
+name: Build C++ Executables
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Compresor (Linux)
+        run: |
+          cd Compresor_Huffman
+          cmake .
+          make
+          mv Compresor_Huffman ../CompresorHuffman_linux
+
+      - name: Build Decompresor (Linux)
+        run: |
+          cd Decompresor_Huffman
+          cmake .
+          make
+          mv Decompresor_Huffman ../DecompresorHuffman_linux
+
+      - name: Upload Linux binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-executables
+          path: |
+            CompresorHuffman_linux
+            DecompresorHuffman_linux
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Compresor (Mac)
+        run: |
+          cd Compresor_Huffman
+          cmake .
+          make
+          mv Compresor_Huffman ../CompresorHuffman_mac
+
+      - name: Build Decompresor (Mac)
+        run: |
+          cd Decompresor_Huffman
+          cmake .
+          make
+          mv Decompresor_Huffman ../DecompresorHuffman_mac
+
+      - name: Upload Mac binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: mac-executables
+          path: |
+            CompresorHuffman_mac
+            DecompresorHuffman_mac

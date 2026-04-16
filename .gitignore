@@ -9,6 +9,15 @@ cmake-build-release/
 *.exe
 *.out
 
+# executabile
+*.exe
+*.out
+
+# exceptii - pastrez executabilele din Java_App
+!Java_App/executabile/CompresorHuffman.exe
+!Java_App/executabile/DecompresorHuffman.exe
+!Java_App/Huffman_Compiler.exe
+
 # obiecte
 *.o
 *.obj
