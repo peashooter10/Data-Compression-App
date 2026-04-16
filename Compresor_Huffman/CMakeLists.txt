@@ -11,7 +11,9 @@ set(CMAKE_CXX_STANDARD 20)
 # în schimb, dacă vrem ca programul să aibă scris în el biblioteca pe care o folosește
 # folosim un LINK STATIC
 # în cazul unei aplicații care apelează fișiere executabile, trebuie să fie folosite LINK-URI STATICE
-set(CMAKE_EXE_LINKER_FLAGS "-static")
+if(WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "-static")
+endif()
 
 # adaug fișierele .cpp la executabil
 add_executable(Compresor_Huffman
