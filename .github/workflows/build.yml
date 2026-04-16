@@ -1,4 +1,4 @@
-name: Build C++ Executables
+name: Build Complete App Package
 
 on:
   push:
@@ -24,13 +24,18 @@ jobs:
           make
           mv Decompresor_Huffman ../DecompresorHuffman_linux
 
-      - name: Upload Linux binaries
+      - name: Pregatesc pachetul Linux
+        run: |
+          mkdir -p Java_App_Linux/executabile
+          cp Java_App/Huffman_Compiler.jar Java_App_Linux/
+          cp CompresorHuffman_linux Java_App_Linux/executabile/CompresorHuffman_linux
+          cp DecompresorHuffman_linux Java_App_Linux/executabile/DecompresorHuffman_linux
+
+      - name: Upload Linux package
         uses: actions/upload-artifact@v4
         with:
-          name: linux-executables
-          path: |
-            CompresorHuffman_linux
-            DecompresorHuffman_linux
+          name: Java_App_Linux
+          path: Java_App_Linux/
 
   build-mac:
     runs-on: macos-latest
@@ -51,10 +56,15 @@ jobs:
           make
           mv Decompresor_Huffman ../DecompresorHuffman_mac
 
-      - name: Upload Mac binaries
+      - name: Pregatesc pachetul Mac
+        run: |
+          mkdir -p Java_App_Mac/executabile
+          cp Java_App/Huffman_Compiler.jar Java_App_Mac/
+          cp CompresorHuffman_mac Java_App_Mac/executabile/CompresorHuffman_mac
+          cp DecompresorHuffman_mac Java_App_Mac/executabile/DecompresorHuffman_mac
+
+      - name: Upload Mac package
         uses: actions/upload-artifact@v4
         with:
-          name: mac-executables
-          path: |
-            CompresorHuffman_mac
-            DecompresorHuffman_mac
+          name: Java_App_Mac
+          path: Java_App_Mac/

@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\emanu\Facultate\Java\NetBeansProjects\Huffman_Compiler\dist\Huffman_Compiler.jar</jar>
+  <jar>C:\Users\emanu\Documents\GitHub\Data-Compression-App\Java_App\Huffman_Compiler.jar</jar>
   <outfile>Huffman_Compiler.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
