@@ -45,10 +45,10 @@ jobs:
 
       - name: Build C++ Linux
         run: |
-          cd Compresor && cmake . && make
-          mv Compresor ../Aplicatie_Java/executabile/CompresorHuffman_linux
-          cd ../Decompresor && cmake . && make
-          mv Decompresor ../Aplicatie_Java/executabile/DecompresorHuffman_linux
+          cd Compresor_Huffman && cmake . && make
+          mv Compresor_Huffman ../Aplicatie_Java/executabile/CompresorHuffman_linux
+          cd ../Decompresor_Huffman && cmake . && make
+          mv Decompresor_Huffman ../Aplicatie_Java/executabile/DecompresorHuffman_linux
 
       - name: Build Linux DEB Installer
         run: |
@@ -80,10 +80,10 @@ jobs:
 
       - name: Build C++ Linux
         run: |
-          cd Compresor && cmake . && make
-          mv Compresor ../Aplicatie_Java/executabile/CompresorHuffman_linux
-          cd ../Decompresor && cmake . && make
-          mv Decompresor ../Aplicatie_Java/executabile/DecompresorHuffman_linux
+          cd Compresor_Huffman && cmake . && make
+          mv Compresor_Huffman ../Aplicatie_Java/executabile/CompresorHuffman_linux
+          cd ../Decompresor_Huffman && cmake . && make
+          mv Decompresor_Huffman ../Aplicatie_Java/executabile/DecompresorHuffman_linux
 
       - name: Build Linux RPM Installer
         run: |
@@ -112,10 +112,10 @@ jobs:
 
       - name: Build C++ Mac
         run: |
-          cd Compresor && cmake . && make
-          mv Compresor ../Aplicatie_Java/executabile/CompresorHuffman_mac
-          cd ../Decompresor && cmake . && make
-          mv Decompresor ../Aplicatie_Java/executabile/DecompresorHuffman_mac
+          cd Compresor_Huffman && cmake . && make
+          mv Compresor_Huffman ../Aplicatie_Java/executabile/CompresorHuffman_mac
+          cd ../Decompresor_Huffman && cmake . && make
+          mv Decompresor_Huffman ../Aplicatie_Java/executabile/DecompresorHuffman_mac
 
       - name: Build Mac Installer
         run: |
