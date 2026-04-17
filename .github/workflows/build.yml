@@ -45,6 +45,7 @@ jobs:
 
       - name: Build C++ Linux
         run: |
+          mkdir -p Aplicatie_Java/executabile
           cd Compresor_Huffman && cmake . && make
           mv Compresor_Huffman ../Aplicatie_Java/executabile/CompresorHuffman_linux
           cd ../Decompresor_Huffman && cmake . && make
@@ -80,6 +81,7 @@ jobs:
 
       - name: Build C++ Linux
         run: |
+          mkdir -p Aplicatie_Java/executabile
           cd Compresor_Huffman && cmake . && make
           mv Compresor_Huffman ../Aplicatie_Java/executabile/CompresorHuffman_linux
           cd ../Decompresor_Huffman && cmake . && make
@@ -112,6 +114,7 @@ jobs:
 
       - name: Build C++ Mac
         run: |
+          mkdir -p Aplicatie_Java/executabile
           cd Compresor_Huffman && cmake . && make
           mv Compresor_Huffman ../Aplicatie_Java/executabile/CompresorHuffman_mac
           cd ../Decompresor_Huffman && cmake . && make
