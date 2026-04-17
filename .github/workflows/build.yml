@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-    build-windows:
+  build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,25 +17,25 @@ jobs:
           distribution: 'oracle'
 
       - name: Setup CMake
-        uses: cmake-action/cmake-action@v1
+        uses: jwlawson/actions-setup-cmake@v2
 
       - name: Build C++ Windows
+        shell: pwsh
         run: |
-          mkdir -p Aplicatie_Java/executabile
-          cd Compresor_Huffman && cmake . && cmake --build . --config Release
-          move Release\Compresor_Huffman.exe ..\Aplicatie_Java\executabile\CompresorHuffman_windows.exe
-          cd ..\Decompresor_Huffman && cmake . && cmake --build . --config Release
-          move Release\Decompresor_Huffman.exe ..\Aplicatie_Java\executabile\DecompresorHuffman_windows.exe
+          New-Item -ItemType Directory -Force -Path Aplicatie_Java/executabile
+
+          cd Compresor_Huffman
+          cmake .
+          cmake --build . --config Release
+          Move-Item Release\Compresor_Huffman.exe ..\Aplicatie_Java\executabile\CompresorHuffman_windows.exe
+
+          cd ..\Decompresor_Huffman
+          cmake .
+          cmake --build . --config Release
+          Move-Item Release\Decompresor_Huffman.exe ..\Aplicatie_Java\executabile\DecompresorHuffman_windows.exe
 
       - name: Build Windows Installer
-        run: |
-          jpackage --input "Aplicatie_Java" `
-            --name HuffmanCompiler `
-            --main-jar Huffman_Compiler.jar `
-            --type exe `
-            --win-dir-chooser `
-            --win-shortcut `
-            --app-version 1.0.0
+        run: jpackage --input Aplicatie_Java --name HuffmanCompiler --main-jar Huffman_Compiler.jar --type exe --win-dir-chooser --win-shortcut --app-version 1.0.0
 
       - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
@@ -63,12 +63,7 @@ jobs:
           mv Decompresor_Huffman ../Aplicatie_Java/executabile/DecompresorHuffman_linux
 
       - name: Build Linux DEB Installer
-        run: |
-          jpackage --input "Aplicatie_Java" \
-            --name HuffmanCompiler \
-            --main-jar Huffman_Compiler.jar \
-            --type deb \
-            --app-version 1.0.0
+        run: jpackage --input Aplicatie_Java --name HuffmanCompiler --main-jar Huffman_Compiler.jar --type deb --app-version 1.0.0
 
       - name: Upload Linux DEB Installer
         uses: actions/upload-artifact@v4
@@ -88,7 +83,7 @@ jobs:
           distribution: 'oracle'
 
       - name: Install RPM tools
-        run: sudo apt-get install -y rpm
+        run: sudo apt-get update && sudo apt-get install -y rpm
 
       - name: Build C++ Linux
         run: |
@@ -99,12 +94,7 @@ jobs:
           mv Decompresor_Huffman ../Aplicatie_Java/executabile/DecompresorHuffman_linux
 
       - name: Build Linux RPM Installer
-        run: |
-          jpackage --input "Aplicatie_Java" \
-            --name HuffmanCompiler \
-            --main-jar Huffman_Compiler.jar \
-            --type rpm \
-            --app-version 1.0.0
+        run: jpackage --input Aplicatie_Java --name HuffmanCompiler --main-jar Huffman_Compiler.jar --type rpm --app-version 1.0.0
 
       - name: Upload Linux RPM Installer
         uses: actions/upload-artifact@v4
@@ -132,12 +122,7 @@ jobs:
           mv Decompresor_Huffman ../Aplicatie_Java/executabile/DecompresorHuffman_mac
 
       - name: Build Mac Installer
-        run: |
-          jpackage --input "Aplicatie_Java" \
-            --name HuffmanCompiler \
-            --main-jar Huffman_Compiler.jar \
-            --type dmg \
-            --app-version 1.0.0
+        run: jpackage --input Aplicatie_Java --name HuffmanCompiler --main-jar Huffman_Compiler.jar --type dmg --app-version 1.0.0
 
       - name: Upload Mac Installer
         uses: actions/upload-artifact@v4
@@ -161,10 +146,10 @@ jobs:
           name: HuffmanCompiler v1.0.${{ github.run_number }}
           body: |
             ## Download
-            - **Windows**: HuffmanCompiler-1.0.0.exe
-            - **Linux Ubuntu/Debian**: huffmancompiler_1.0.0_amd64.deb
-            - **Linux Fedora/RedHat**: huffmancompiler-1.0.0-1.x86_64.rpm
-            - **Mac**: HuffmanCompiler-1.0.0.dmg
+            - Windows: HuffmanCompiler-1.0.0.exe
+            - Linux Debian/Ubuntu: huffmancompiler_1.0.0_amd64.deb
+            - Linux RPM: huffmancompiler-1.0.0-1.x86_64.rpm
+            - Mac: HuffmanCompiler-1.0.0.dmg
           files: |
             Windows_Installer/HuffmanCompiler-1.0.0.exe
             Linux_Installer_DEB/huffmancompiler_1.0.0_amd64.deb
