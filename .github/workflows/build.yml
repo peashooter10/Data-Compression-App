@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-windows:
+    build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,6 +15,17 @@ jobs:
         with:
           java-version: '25'
           distribution: 'oracle'
+
+      - name: Setup CMake
+        uses: cmake-action/cmake-action@v1
+
+      - name: Build C++ Windows
+        run: |
+          mkdir -p Aplicatie_Java/executabile
+          cd Compresor_Huffman && cmake . && cmake --build . --config Release
+          move Release\Compresor_Huffman.exe ..\Aplicatie_Java\executabile\CompresorHuffman_windows.exe
+          cd ..\Decompresor_Huffman && cmake . && cmake --build . --config Release
+          move Release\Decompresor_Huffman.exe ..\Aplicatie_Java\executabile\DecompresorHuffman_windows.exe
 
       - name: Build Windows Installer
         run: |
