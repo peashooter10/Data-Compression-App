@@ -5,43 +5,25 @@ on:
     branches: [ main ]
 
 jobs:
-
-# ================= WINDOWS =================
   build-windows:
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java (JDK 21 + jpackage)
+      - name: Setup Java 25
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
+          distribution: 'oracle'
 
-      - name: Build C++ (Windows)
+      - name: Build Windows Installer
         run: |
-          cd Compresor
-          cmake .
-          cmake --build .
-          move Compresor.exe ..\Aplicatie_Java\executabile\CompresorHuffman.exe
-
-          cd ..\Decompresor
-          cmake .
-          cmake --build .
-          move Decompresor.exe ..\Aplicatie_Java\executabile\DecompresorHuffman.exe
-
-      - name: Build Windows Installer (.exe)
-        run: |
-          jpackage ^
-            --input Aplicatie_Java ^
-            --name HuffmanCompiler ^
-            --main-jar Huffman_Compiler.jar ^
-            --main-class MeniuPrincipal ^
-            --type exe ^
-            --win-dir-chooser ^
-            --win-shortcut ^
-            --win-menu ^
+          jpackage --input "Aplicatie_Java" `
+            --name HuffmanCompiler `
+            --main-jar Huffman_Compiler.jar `
+            --type exe `
+            --win-dir-chooser `
+            --win-shortcut `
             --app-version 1.0.0
 
       - name: Upload Windows Installer
@@ -50,138 +32,101 @@ jobs:
           name: Windows_Installer
           path: HuffmanCompiler-1.0.0.exe
 
-
-# ================= LINUX DEB =================
-  build-linux-deb:
+  build-linux:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install build tools
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake
-
-      - name: Setup Java
+      - name: Setup Java 25
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
+          distribution: 'oracle'
 
-      - name: Build C++ (Linux)
+      - name: Build C++ Linux
         run: |
-          cd Compresor
-          cmake .
-          make
+          cd Compresor && cmake . && make
           mv Compresor ../Aplicatie_Java/executabile/CompresorHuffman_linux
-
-          cd ../Decompresor
-          cmake .
-          make
+          cd ../Decompresor && cmake . && make
           mv Decompresor ../Aplicatie_Java/executabile/DecompresorHuffman_linux
 
-      - name: Build Linux DEB
+      - name: Build Linux DEB Installer
         run: |
-          jpackage \
-            --input Aplicatie_Java \
+          jpackage --input "Aplicatie_Java" \
             --name HuffmanCompiler \
             --main-jar Huffman_Compiler.jar \
-            --main-class MeniuPrincipal \
             --type deb \
             --app-version 1.0.0
 
-      - name: Upload DEB
+      - name: Upload Linux DEB Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Linux_DEB
+          name: Linux_Installer_DEB
           path: huffmancompiler_1.0.0_amd64.deb
 
-
-# ================= LINUX RPM =================
   build-linux-rpm:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install build tools + rpm
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake rpm
-
-      - name: Setup Java
+      - name: Setup Java 25
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
+          distribution: 'oracle'
 
-      - name: Build C++ (Linux)
+      - name: Install RPM tools
+        run: sudo apt-get install -y rpm
+
+      - name: Build C++ Linux
         run: |
-          cd Compresor
-          cmake .
-          make
+          cd Compresor && cmake . && make
           mv Compresor ../Aplicatie_Java/executabile/CompresorHuffman_linux
-
-          cd ../Decompresor
-          cmake .
-          make
+          cd ../Decompresor && cmake . && make
           mv Decompresor ../Aplicatie_Java/executabile/DecompresorHuffman_linux
 
-      - name: Build Linux RPM
+      - name: Build Linux RPM Installer
         run: |
-          jpackage \
-            --input Aplicatie_Java \
+          jpackage --input "Aplicatie_Java" \
             --name HuffmanCompiler \
             --main-jar Huffman_Compiler.jar \
-            --main-class MeniuPrincipal \
             --type rpm \
             --app-version 1.0.0
 
-      - name: Upload RPM
+      - name: Upload Linux RPM Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Linux_RPM
+          name: Linux_Installer_RPM
           path: huffmancompiler-1.0.0-1.x86_64.rpm
 
-
-# ================= MAC =================
   build-mac:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install CMake
-        run: brew install cmake
-
-      - name: Setup Java
+      - name: Setup Java 25
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
+          distribution: 'oracle'
 
-      - name: Build C++ (Mac)
+      - name: Build C++ Mac
         run: |
-          cd Compresor
-          cmake .
-          make
+          cd Compresor && cmake . && make
           mv Compresor ../Aplicatie_Java/executabile/CompresorHuffman_mac
-
-          cd ../Decompresor
-          cmake .
-          make
+          cd ../Decompresor && cmake . && make
           mv Decompresor ../Aplicatie_Java/executabile/DecompresorHuffman_mac
 
-      - name: Build Mac DMG
+      - name: Build Mac Installer
         run: |
-          jpackage \
-            --input Aplicatie_Java \
+          jpackage --input "Aplicatie_Java" \
             --name HuffmanCompiler \
             --main-jar Huffman_Compiler.jar \
-            --main-class MeniuPrincipal \
             --type dmg \
-            --app-version 1.0.0 \
-            --mac-package-name HuffmanCompiler
+            --app-version 1.0.0
 
-      - name: Upload DMG
+      - name: Upload Mac Installer
         uses: actions/upload-artifact@v4
         with:
-          name: Mac_DMG
+          name: Mac_Installer
           path: HuffmanCompiler-1.0.0.dmg
