@@ -133,3 +133,29 @@ jobs:
         with:
           name: Mac_Installer
           path: HuffmanCompiler-1.0.0.dmg
+
+  release:
+    needs: [build-windows, build-linux, build-linux-rpm, build-mac]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: HuffmanCompiler v1.0.${{ github.run_number }}
+          body: |
+            ## Download
+            - **Windows**: HuffmanCompiler-1.0.0.exe
+            - **Linux Ubuntu/Debian**: huffmancompiler_1.0.0_amd64.deb
+            - **Linux Fedora/RedHat**: huffmancompiler-1.0.0-1.x86_64.rpm
+            - **Mac**: HuffmanCompiler-1.0.0.dmg
+          files: |
+            Windows_Installer/HuffmanCompiler-1.0.0.exe
+            Linux_Installer_DEB/huffmancompiler_1.0.0_amd64.deb
+            Linux_Installer_RPM/huffmancompiler-1.0.0-1.x86_64.rpm
+            Mac_Installer/HuffmanCompiler-1.0.0.dmg
