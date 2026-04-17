@@ -11,6 +11,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.io.InputStream;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 // clasa meniu principal
 public class MeniuPrincipal extends javax.swing.JFrame {
@@ -18,75 +20,75 @@ public class MeniuPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel ContainerPrincipal; // container principal pentru lucrul cu mai multe panel-uri
     private java.awt.CardLayout cardLayout; // lucrul cu mai multe panel-uri
     
-    private List<File> fisiereSelectate = new ArrayList<>(); // array list în care salvez fișierele selectate
+    // array-uri list în care salvez fișierele selectate
+    private List<File> fisiereCompresare = new ArrayList<>();
+    private List<File> fisiereDecompresare = new ArrayList<>();
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MeniuPrincipal.class.getName());
     
     // funcția care îmi găsește executabilele
-    private String gasesteExecutabil(String numeWindows, String numeUnix) {
+    private String gasesteExecutabil(String numeBase) {
         String os = System.getProperty("os.name").toLowerCase();
         String nume;
 
         if (os.contains("win")) {
-            nume = numeWindows + ".exe";
+            nume = numeBase + ".exe";
         } else if (os.contains("mac")) {
-            nume = numeUnix + "_mac";
+            nume = numeBase + "_mac";
         } else {
-            nume = numeUnix + "_linux";
+            nume = numeBase + "_linux";
         }
 
+        // cauta langa .jar (jpackage pune fisierele in app/)
         try {
-            // luam fisierul din jar (resources)
-            InputStream is = getClass().getResourceAsStream("/executabile/" + nume);
+            String jarDir = new File(MeniuPrincipal.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .toURI())
+                .getParentFile()
+                .getAbsolutePath();
 
-            if (is == null) {
-                System.out.println("Nu exista in jar: " + nume);
-                return null;
-            }
-
-            // cream fisier temporar
-            File tempFile = File.createTempFile(nume, null);
-            tempFile.deleteOnExit();
-
-            // copiem din jar in fisier real
-            java.nio.file.Files.copy(is, tempFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-
-            // 🔥 IMPORTANT pentru mac/linux
-            tempFile.setExecutable(true);
-
-            return tempFile.getAbsolutePath();
-
+            File exe = new File(jarDir + File.separator + "executabile" + File.separator + nume);
+            if (exe.exists()) return exe.getAbsolutePath();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        // fallback - user.dir (NetBeans)
+        File exe2 = new File(System.getProperty("user.dir") + File.separator + "executabile" + File.separator + nume);
+        if (exe2.exists()) return exe2.getAbsolutePath();
+
         return null;
     }
+
     // constructor
     public MeniuPrincipal() {
         initComponents();
-        setTitle("Compresor de fișiere"); // setez numele ferestrei
-        
-        javax.swing.JOptionPane.showMessageDialog(null, 
-            "user.dir = " + System.getProperty("user.dir") + 
-            "\nexecutable path = " + new java.io.File(".").getAbsolutePath()
-        );
+        setTitle("Compresor de fișiere");
 
         cardLayout = new java.awt.CardLayout();
+
         ContainerPrincipal = new javax.swing.JPanel(cardLayout);
-        
-        // adaug meniul principal și ecranele de compresare/decompresare
-        ContainerPrincipal.add(PanelMeniuPrincipal, "meniu"); 
+
+        ContainerPrincipal.add(PanelMeniuPrincipal, "meniu");
         ContainerPrincipal.add(PanelCompresare, "compresare");
         ContainerPrincipal.add(PanelDecompresare, "decompresare");
 
         setContentPane(ContainerPrincipal);
-        
-        // reafișez corect panel-ul curent
-        revalidate();
-        repaint();
-    }
 
+        setResizable(true);
+
+        // good default size for resizing behavior
+        setLocationRelativeTo(null);
+
+        // show menu first
+        cardLayout.show(ContainerPrincipal, "meniu");
+
+        // refresh UI
+        ContainerPrincipal.revalidate();
+        ContainerPrincipal.repaint();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -253,7 +255,6 @@ public class MeniuPrincipal extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
 
         PanelMeniuPrincipal.setBackground(new java.awt.Color(102, 204, 255));
         PanelMeniuPrincipal.setForeground(new java.awt.Color(0, 0, 0));
@@ -278,23 +279,23 @@ public class MeniuPrincipal extends javax.swing.JFrame {
         PanelMeniuPrincipal.setLayout(PanelMeniuPrincipalLayout);
         PanelMeniuPrincipalLayout.setHorizontalGroup(
             PanelMeniuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelMeniuPrincipalLayout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
-                .addGroup(PanelMeniuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(PanelMeniuPrincipalLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(PanelMeniuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(LabelTitlu)
                     .addGroup(PanelMeniuPrincipalLayout.createSequentialGroup()
                         .addComponent(ButonAlegereCompresare)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(ButonAlegereDecompresare))
-                    .addComponent(LabelTitlu))
-                .addGap(27, 27, 27))
+                        .addGap(124, 124, 124)
+                        .addComponent(ButonAlegereDecompresare)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         PanelMeniuPrincipalLayout.setVerticalGroup(
             PanelMeniuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelMeniuPrincipalLayout.createSequentialGroup()
-                .addContainerGap(72, Short.MAX_VALUE)
-                .addComponent(LabelTitlu, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69)
-                .addGroup(PanelMeniuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addGroup(PanelMeniuPrincipalLayout.createSequentialGroup()
+                .addGap(91, 91, 91)
+                .addComponent(LabelTitlu, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                .addGap(50, 50, 50)
+                .addGroup(PanelMeniuPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ButonAlegereCompresare)
                     .addComponent(ButonAlegereDecompresare))
                 .addGap(65, 65, 65))
@@ -304,11 +305,21 @@ public class MeniuPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(PanelMeniuPrincipal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 407, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, 0)
+                    .addComponent(PanelMeniuPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(0, 0, 0)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(PanelMeniuPrincipal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(PanelMeniuPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         pack();
@@ -331,78 +342,59 @@ public class MeniuPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_ButonInapoi2ActionPerformed
 
     private void ButonAnulareSelectareFisiere1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonAnulareSelectareFisiere1ActionPerformed
-        fisiereSelectate.clear();
-        ListaFisiereCompresare.setModel(new javax.swing.DefaultListModel<>());
+        fisiereCompresare.clear();
+        ListaFisiereCompresare.setModel(new DefaultListModel<>());
     }//GEN-LAST:event_ButonAnulareSelectareFisiere1ActionPerformed
 
     private void ButonAlegeFisiereCompresareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonAlegeFisiereCompresareActionPerformed
-        fisiereSelectate.clear();
-        ListaFisiereCompresare.setModel(new javax.swing.DefaultListModel<>());
-        
-        // în chooser salvez fișierele
+        fisiereCompresare.clear();
+
+        DefaultListModel<String> model = new DefaultListModel<>();
+        ListaFisiereCompresare.setModel(model);
+
         JFileChooser chooser = new JFileChooser();
         chooser.setMultiSelectionEnabled(true);
-        int result = chooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                for (File f : chooser.getSelectedFiles()) {
-                    fisiereSelectate.add(f);
-                    ((javax.swing.DefaultListModel<String>) ListaFisiereCompresare.getModel()).addElement(f.getAbsolutePath());
-                }
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            for (File f : chooser.getSelectedFiles()) {
+                fisiereCompresare.add(f);
+                model.addElement(f.getAbsolutePath());
             }
+        }
     }//GEN-LAST:event_ButonAlegeFisiereCompresareActionPerformed
 
     private void ButonCompresareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonCompresareActionPerformed
-        if (fisiereSelectate.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                "Nu ai selectat niciun fisier!", 
-                "Eroare", 
-                javax.swing.JOptionPane.ERROR_MESSAGE);
+        if (fisiereCompresare.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nu ai selectat niciun fisier!");
             return;
         }
-        
-        // aleg folderul de iesire
+
         JFileChooser folderChooser = new JFileChooser();
         folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        folderChooser.setDialogTitle("Alege folderul de iesire");
 
-        int rezultat = folderChooser.showOpenDialog(this);
-        if (rezultat != JFileChooser.APPROVE_OPTION) return;
+        if (folderChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
 
-        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath() + "/";        
-        String executabil = gasesteExecutabil("CompresorHuffman", "CompresorHuffman");
+        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath();
+        String executabil = gasesteExecutabil("CompresorHuffman");
 
         if (executabil == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Executabilul nu a fost găsit!",
-                "Eroare",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Compresorul nu a fost găsit!");
             return;
         }
 
         try {
-            for (File f : fisiereSelectate) { // parcurg toate fișierele
-                ProcessBuilder pb = new ProcessBuilder( // și le compresez
+            for (File f : fisiereCompresare) {
+                ProcessBuilder pb = new ProcessBuilder(
                     executabil,
                     f.getAbsolutePath(),
                     folderIesire
                 );
-                
-                pb.redirectErrorStream(true);
+
                 Process p = pb.start();
-                String output = new String(p.getInputStream().readAllBytes());
                 p.waitFor();
-                //pentru debugging
-                System.out.println("Output: " + output);
-                System.out.println("Executabil: " + executabil);
-                System.out.println("Fisier: " + f.getAbsolutePath());
-                System.out.println("Folder iesire: " + folderIesire);            
-                
-                
-                p.waitFor(); // aștept să termine
             }
 
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Compresarea s-a terminat!");
+            JOptionPane.showMessageDialog(this, "Compresie finalizată!");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -410,87 +402,72 @@ public class MeniuPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_ButonCompresareActionPerformed
 
     private void ButonAlegeFisiereDecompresareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonAlegeFisiereDecompresareActionPerformed
-        fisiereSelectate.clear();
-        ListaFisiereDecompresare.setModel(new javax.swing.DefaultListModel<>());
-        
+        fisiereDecompresare.clear();
+
+        DefaultListModel<String> model = new DefaultListModel<>();
+        ListaFisiereDecompresare.setModel(model);
+
         JFileChooser chooser = new JFileChooser();
         chooser.setMultiSelectionEnabled(true);
-        
-        // aleg numai fișiere .huff pentru decompresare
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Fisiere Huffman (*.huff)", "huff"));
 
-        int result = chooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
+        chooser.setFileFilter(
+            new javax.swing.filechooser.FileNameExtensionFilter("Huffman (*.huff)", "huff")
+        );
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             for (File f : chooser.getSelectedFiles()) {
-                fisiereSelectate.add(f);
-                ((javax.swing.DefaultListModel<String>) ListaFisiereDecompresare.getModel()).addElement(f.getAbsolutePath());
+                fisiereDecompresare.add(f);
+                model.addElement(f.getAbsolutePath());
             }
         }
     }//GEN-LAST:event_ButonAlegeFisiereDecompresareActionPerformed
 
     private void ButonAnulareSelectareFisiere2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonAnulareSelectareFisiere2ActionPerformed
-        fisiereSelectate.clear();
-        ListaFisiereDecompresare.setModel(new javax.swing.DefaultListModel<>());
+        fisiereCompresare.clear();
+        ListaFisiereCompresare.setModel(new DefaultListModel<>());
     }//GEN-LAST:event_ButonAnulareSelectareFisiere2ActionPerformed
 
     private void ButonDecompresareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonDecompresareActionPerformed
-        if (fisiereSelectate.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, 
-                "Nu ai selectat niciun fisier!", 
-                "Eroare", 
-                javax.swing.JOptionPane.ERROR_MESSAGE);
+        if (fisiereDecompresare.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nu ai selectat niciun fisier!");
             return;
         }
-        
-        // aleg folderul de iesire
+
         JFileChooser folderChooser = new JFileChooser();
         folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        folderChooser.setDialogTitle("Alege folderul de iesire");
 
-        int rezultat = folderChooser.showOpenDialog(this);
-        if (rezultat != JFileChooser.APPROVE_OPTION) return;
+        if (folderChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
 
-        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath() + "/";        
-        String executabil = gasesteExecutabil("DecompresorHuffman", "DecompresorHuffman");
+        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath();
+        String executabil = gasesteExecutabil("DecompresorHuffman");
 
         if (executabil == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Executabilul nu a fost găsit!",
-                "Eroare",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Decompresorul nu a fost găsit!");
             return;
         }
 
         try {
-            for (File f : fisiereSelectate) {
-                // extrag numele fisierului fara .huff
-                String numeFisier = f.getName(); // de exemplu Frankenstein.html.huff
-                String numeOriginal = numeFisier.endsWith(".huff") 
-                    ? numeFisier.substring(0, numeFisier.length() - 5) 
-                    : numeFisier; // acuma va fi Frankenstein.html
+            for (File f : fisiereDecompresare) {
 
-                // adaug _decompresat inainte de extensie
-                int ultimPunct = numeOriginal.lastIndexOf('.');
-                String numeIesire = (ultimPunct != -1)
-                    ? numeOriginal.substring(0, ultimPunct) + "_decompresat" + numeOriginal.substring(ultimPunct)
-                    : numeOriginal + "_decompresat"; // acuma va fi Frankenstein_decompresat.html
+                String numeFisier = f.getName().replace(".huff", "");
+                int idx = numeFisier.lastIndexOf('.');
+
+                String numeIesire = (idx != -1)
+                    ? numeFisier.substring(0, idx) + "_decompresat" + numeFisier.substring(idx)
+                    : numeFisier + "_decompresat";
 
                 ProcessBuilder pb = new ProcessBuilder(
                     executabil,
-                    f.getAbsolutePath(),  // fisier.huff
-                    folderIesire,         // folderul de iesire
-                    numeIesire            // numele fisierului de iesire
+                    f.getAbsolutePath(),
+                    folderIesire,
+                    numeIesire
                 );
 
-                pb.redirectErrorStream(true);
                 Process p = pb.start();
-                String output = new String(p.getInputStream().readAllBytes());
                 p.waitFor();
-                System.out.println("Output: " + output);
             }
 
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Decompresarea s-a terminat!");
+            JOptionPane.showMessageDialog(this, "Decompresie finalizată!");
 
         } catch (Exception e) {
             e.printStackTrace();
