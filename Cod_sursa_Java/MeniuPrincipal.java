@@ -374,7 +374,7 @@ public class MeniuPrincipal extends javax.swing.JFrame {
 
         if (folderChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
 
-        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath();
+        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath() + "/";
         String executabil = gasesteExecutabil("CompresorHuffman");
 
         if (executabil == null) {
@@ -423,8 +423,8 @@ public class MeniuPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_ButonAlegeFisiereDecompresareActionPerformed
 
     private void ButonAnulareSelectareFisiere2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonAnulareSelectareFisiere2ActionPerformed
-        fisiereCompresare.clear();
-        ListaFisiereCompresare.setModel(new DefaultListModel<>());
+        fisiereDecompresare.clear();
+        ListaFisiereDecompresare.setModel(new DefaultListModel<>());
     }//GEN-LAST:event_ButonAnulareSelectareFisiere2ActionPerformed
 
     private void ButonDecompresareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButonDecompresareActionPerformed
@@ -438,7 +438,7 @@ public class MeniuPrincipal extends javax.swing.JFrame {
 
         if (folderChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
 
-        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath();
+        String folderIesire = folderChooser.getSelectedFile().getAbsolutePath() + "/";
         String executabil = gasesteExecutabil("DecompresorHuffman");
 
         if (executabil == null) {
