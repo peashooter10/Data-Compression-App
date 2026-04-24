@@ -1,20 +1,3 @@
 # Data-Compression-App
-An app designed to compress data, a simple example of the Huffman algorithm
 
-For Linux/Mac please go to Actions/Rulare din start pentru Windows/Linux/Mac, then scroll to the bottom of the page and download the artifact according to your OS and decompress the downloaded folder. After that, enter the terminal in the respective folder and run the following commands:<br/>
-
-**LINUX**<br>
-chmod +x executabile/CompresorHuffman_linux  
-chmod +x executabile/DecompresorHuffman_linux  
-
-**MAC**<br>
-chmod +x executabile/CompresorHuffman_mac  
-chmod +x executabile/DecompresorHuffman_mac  
-
-then run the app:
-java -jar Huffman_Compiler.jar<br>
-
-Enjoy using the app!
-
-P.S.
-The comments are in Romanian
+O aplicație de compresie a datelor folosind algoritmul Huffman. Pentru a rula aplicația, deschideți fila Releases, descărcați fișierul aferent sistemului de operare și instalați aplicația. Din acest punct, puteți comprima și decomprima fișiere.
